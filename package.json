@@ -1,16 +1,29 @@
 {
   "name": "first-responder-quick-notes",
   "version": "1.0.0",
-  "description": "",
+  "description": "A fast, offline-first note-taking tool for first responders to capture timestamped notes with optional location and tags.",
   "main": "index.js",
+
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm run dev",
+    "test": "echo \"No tests configured\" && exit 0"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+
+  "keywords": [
+    "react",
+    "typescript",
+    "vite",
+    "express",
+    "first-responders",
+    "notes",
+    "offline"
+  ],
+
+  "author": "David",
+  "license": "MIT",
   "type": "commonjs",
+
   "devDependencies": {
     "concurrently": "^9.2.1"
   }

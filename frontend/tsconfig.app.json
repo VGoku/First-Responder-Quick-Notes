@@ -1,28 +1,39 @@
+/**
+ * tsconfig.app.json
+ * -----------------
+ * TypeScript configuration for the React application.
+ * Uses Vite's bundler mode and strict type checking.
+ */
+
 {
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+
+    /* Language + environment */
     "target": "ES2022",
-    "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
+    "jsx": "react-jsx",
     "types": ["vite/client"],
     "skipLibCheck": true,
+    "allowJs": false,
 
-    /* Bundler mode */
+    /* Bundler mode (Vite) */
+    "module": "ESNext",
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
     "moduleDetection": "force",
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
     "noEmit": true,
-    "jsx": "react-jsx",
+    "isolatedModules": true,
 
-    /* Linting */
+    /* Linting + safety */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "erasableSyntaxOnly": true
   },
+
   "include": ["src"]
 }

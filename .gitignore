@@ -1,3 +1,8 @@
+# ---------------------------------------------------------
+# Root .gitignore
+# Monorepo: Frontend + Backend
+# ---------------------------------------------------------
+
 # Node
 node_modules
 npm-debug.log*
@@ -8,10 +13,12 @@ yarn-error.log*
 logs
 *.log
 
-# Env
+# Environment files
 .env
 .env.local
 .env.*.local
+.env.development
+.env.production
 
 # Build output
 dist
@@ -20,13 +27,19 @@ build
 # Vercel
 .vercel
 
-# Mac
+# OS files
 .DS_Store
 
-# Frontend
-frontend/node_modules
+# Editor settings (optional)
+.vscode/
+.idea/
+
+# Tooling caches (optional)
+.turbo/
+.pnpm-store/
+
+# Frontend build artifacts
 frontend/dist
 
-# Backend
-backend/node_modules
+# Backend build artifacts
 backend/dist

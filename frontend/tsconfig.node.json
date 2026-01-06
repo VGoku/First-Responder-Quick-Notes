@@ -1,26 +1,37 @@
+/**
+ * tsconfig.node.json
+ * ------------------
+ * TypeScript configuration for Node-based tooling (e.g., Vite config).
+ * Enables strict type checking and modern module resolution.
+ */
+
 {
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+
+    /* Language + environment */
     "target": "ES2023",
     "lib": ["ES2023"],
-    "module": "ESNext",
     "types": ["node"],
     "skipLibCheck": true,
+    "isolatedModules": true,
 
-    /* Bundler mode */
+    /* Bundler mode (Vite) */
+    "module": "ESNext",
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
     "moduleDetection": "force",
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
     "noEmit": true,
 
-    /* Linting */
+    /* Linting + safety */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "erasableSyntaxOnly": true
   },
+
   "include": ["vite.config.ts"]
 }

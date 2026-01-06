@@ -5,9 +5,13 @@ export default function useGeoLocation() {
 
   useEffect(() => {
     if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition((p) =>
-      setPos({ lat: p.coords.latitude, lng: p.coords.longitude })
-    );
+
+    navigator.geolocation.getCurrentPosition((p) => {
+      setPos({
+        lat: p.coords.latitude,
+        lng: p.coords.longitude,
+      });
+    });
   }, []);
 
   return pos;

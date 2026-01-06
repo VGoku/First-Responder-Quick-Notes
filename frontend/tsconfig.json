@@ -1,3 +1,10 @@
+/**
+ * Root TypeScript Configuration
+ * -----------------------------
+ * This file defines project references for the app and tooling configs.
+ * The actual compiler settings live in tsconfig.app.json and tsconfig.node.json.
+ */
+
 {
   "files": [],
   "references": [
