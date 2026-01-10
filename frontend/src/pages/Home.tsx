@@ -9,13 +9,24 @@
 
 export default function Home() {
   return (
-    <main className="p-6 text-white bg-bg min-h-screen">
-      <h1 className="text-3xl font-bold">Home</h1>
+    <div className="min-h-screen w-full flex justify-center items-center">
+      <main className="px-6 py-10 max-w-3xl w-full text-white">
+        <h1 className="text-4xl font-bold tracking-tight mb-2">
+          Quick Notes for First Responders
+        </h1>
 
-      <p className="mt-4 text-white/70">
-        Welcome to First Responder Quick Notes. Your recent notes and quick
-        actions will appear here.
-      </p>
-    </main>
+        <p className="text-lg text-gray-300 mb-8">
+          Capture vital info fast — timestamp, location, and tags.
+        </p>
+
+        <button className="bg-brand-500 hover:bg-brand-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition-transform transform hover:scale-105">
+          + Create New Note
+        </button>
+
+        <div className="mt-12 text-center text-gray-500">
+          No notes yet — ready when you are.
+        </div>
+      </main>
+    </div>
   );
 }

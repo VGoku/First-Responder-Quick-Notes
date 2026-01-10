@@ -1,39 +1,32 @@
-/**
- * App.tsx
- * -------
- * Root component that manages:
- * - Navigation between Home, New Note, and View Note screens
- * - Local note storage (via useLocalNotes)
- * - Creating, deleting, and exporting notes
- *
- * This acts as a simple state machine using the `view` object.
- */
-
 import { useState } from "react";
 import "./App.css";
 
 import Navbar from "./components/Navbar";
-import Button from "./components/Button";
-import NoteCard from "./components/NoteCard";
 
 import NewNote from "./pages/NewNote";
 import ViewNote from "./pages/ViewNote";
+import EMTDashboard from "./pages/EMTDashboard";
+import EMTIncident from "./pages/EMTIncident";
 
 import useLocalNotes from "./hooks/useLocalNotes";
 import type { Note } from "./types/Note";
 
-// Defines which screen is currently active
+/**
+ * ViewState controls which screen is visible.
+ */
 type ViewState =
   | { name: "home" }
   | { name: "new" }
-  | { name: "view"; id: string };
+  | { name: "view"; id: string }
+  | { name: "emt" }
+  | { name: "emt-incident" };
 
 function App() {
   const [view, setView] = useState<ViewState>({ name: "home" });
   const { notes, setNotes } = useLocalNotes();
 
   /**
-   * Saves a new note and navigates to its detail view.
+   * Save a new note and navigate to its detail view.
    */
   function handleSave(note: Note) {
     setNotes([note, ...notes]);
@@ -41,7 +34,7 @@ function App() {
   }
 
   /**
-   * Deletes a note and returns to the home screen.
+   * Delete a note and return to home.
    */
   function handleDelete(id: string) {
     setNotes(notes.filter((n) => n.id !== id));
@@ -49,7 +42,7 @@ function App() {
   }
 
   /**
-   * Exports a note as a JSON file.
+   * Export a note as JSON.
    */
   function handleExport(note: Note) {
     const blob = new Blob([JSON.stringify(note, null, 2)], {
@@ -66,68 +59,97 @@ function App() {
     URL.revokeObjectURL(url);
   }
 
-  // Find the note currently being viewed (if any)
+  // Find the note currently being viewed
   const currentNote =
     view.name === "view" ? notes.find((n) => n.id === view.id) : null;
 
   return (
-    <div className="min-h-screen bg-bg text-white font-inter">
+    <div className="min-h-screen w-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white font-inter">
       <Navbar />
 
-      <main className="max-w-4xl mx-auto p-6">
-        {/* HOME SCREEN */}
-        {view.name === "home" && (
-          <section>
-            <div className="flex flex-col items-center gap-6 mb-8">
-              <h1 className="text-3xl font-semibold">
+      <main className="min-h-[calc(100vh-4rem)] px-8 py-12 flex justify-center items-start">
+        <section className="w-full max-w-7xl bg-slate-950 rounded-xl shadow-xl p-10">
+
+          {/* HOME SCREEN */}
+          {view.name === "home" && (
+            <div className="text-center">
+              <h1 className="text-4xl font-bold tracking-tight mb-2">
                 Quick Notes for First Responders
               </h1>
-              <p className="text-white/70">
+
+              <p className="text-lg text-white/70 mb-8">
                 Capture vital info fast — timestamp, location, and tags.
               </p>
 
-              <Button
-                variant="primary"
-                className="px-6 py-3 text-lg"
-                onClick={() => setView({ name: "new" })}
+              {/* EMT Mode button */}
+              <button
+                onClick={() => setView({ name: "emt" })}
+                className="bg-brand-500 hover:bg-brand-600 text-white px-6 py-3 rounded-lg text-lg mb-10"
               >
-                + Create New Note
-              </Button>
-            </div>
+                EMT Mode
+              </button>
 
-            <div className="grid gap-4">
-              {notes.length === 0 && (
-                <div className="text-center text-white/60">No recent notes</div>
+              {notes.length === 0 ? (
+                <div className="text-white/50">No recent notes</div>
+              ) : (
+                <div className="grid gap-4">
+                  {notes.map((n) => (
+                    <div
+                      key={n.id}
+                      onClick={() => setView({ name: "view", id: n.id })}
+                      className="bg-slate-800 p-4 rounded-lg cursor-pointer hover:bg-slate-700 transition"
+                    >
+                      <h2 className="text-xl font-semibold">{n.title}</h2>
+                      <p className="text-white/70 text-sm">{n.timestamp}</p>
+                    </div>
+                  ))}
+                </div>
               )}
-
-              {notes.map((n) => (
-                <NoteCard
-                  key={n.id}
-                  note={n}
-                  onClick={() => setView({ name: "view", id: n.id })}
-                />
-              ))}
             </div>
-          </section>
-        )}
+          )}
 
-        {/* NEW NOTE SCREEN */}
-        {view.name === "new" && (
-          <NewNote
-            onSave={handleSave}
-            onCancel={() => setView({ name: "home" })}
-          />
-        )}
+          {/* EMT DASHBOARD */}
+          {view.name === "emt" && (
+            <EMTDashboard
+              onStart={() => setView({ name: "emt-incident" })}
+              onContinue={() =>
+                setView({ name: "view", id: notes[0]?.id || "" })
+              }
+              onView={() => setView({ name: "home" })}
+            />
+          )}
 
-        {/* VIEW NOTE SCREEN */}
-        {view.name === "view" && currentNote && (
-          <ViewNote
-            note={currentNote}
-            onEdit={() => setView({ name: "new" })} // Editing not implemented yet
-            onDelete={() => handleDelete(currentNote.id)}
-            onExport={() => handleExport(currentNote)}
-          />
-        )}
+          {/* EMT INCIDENT SCREEN */}
+          {view.name === "emt-incident" && (
+  <EMTIncident
+    onSave={(data) => {
+      console.log("Incident saved:", data);
+      setView({ name: "emt" });
+    }}
+    onCancel={() => setView({ name: "emt" })} // ← This already acts as a back button
+  />
+)}
+
+
+          {/* NEW NOTE */}
+          {view.name === "new" && (
+            <NewNote
+              onSave={handleSave}
+              onCancel={() => setView({ name: "home" })}
+            />
+          )}
+
+          {/* VIEW NOTE */}
+          {view.name === "view" && currentNote && (
+            <ViewNote
+              note={currentNote}
+              onEdit={() => setView({ name: "new" })}
+              onDelete={() => handleDelete(currentNote.id)}
+              onExport={() => handleExport(currentNote)}
+            />
+          )}
+
+        </section>
       </main>
     </div>
   );
