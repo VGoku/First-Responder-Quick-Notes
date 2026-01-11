@@ -9,6 +9,7 @@
  */
 
 import { useState } from "react";
+import PhotoCapture from "../components/PhotoCapture";
 
 export interface EMTIncidentData {
   timeline: string[];
@@ -16,6 +17,7 @@ export interface EMTIncidentData {
   vitals: string[];
   conditions: string[];
   createdAt: string;
+  photos: string[];
 }
 
 interface EMTIncidentProps {
@@ -41,7 +43,7 @@ export default function EMTIncident({
   const [notes, setNotes] = useState(initialData?.notes || "");
   const [vitals, setVitals] = useState<string[]>(initialData?.vitals || []);
   const [conditions, setConditions] = useState<string[]>(initialData?.conditions || []);
-
+  const [photos, setPhotos] = useState<string[]>(initialData?.photos || []);
   /**
    * Add a timestamped event to the timeline.
    */
@@ -60,6 +62,7 @@ export default function EMTIncident({
       notes,
       vitals,
       conditions,
+      photos,
       createdAt: initialData?.createdAt || new Date().toISOString(),
     };
 
@@ -125,6 +128,64 @@ export default function EMTIncident({
           ))}
         </div>
       </div>
+
+      {/* PHOTO CAPTURE */}
+<div>
+  <h2 className="text-xl font-semibold mb-2">Photos</h2>
+
+  <PhotoCapture
+    onPhoto={(base64) => setPhotos((prev) => [...prev, base64])}
+  />
+
+  {/* PHOTO GALLERY */}
+  <div className="mt-4">
+    <h3 className="text-lg font-semibold mb-2">Gallery</h3>
+
+    {/* Desktop Grid */}
+    <div className="hidden md:grid grid-cols-4 gap-3">
+      {photos.map((src, i) => (
+        <div key={i} className="relative">
+          <img
+            src={src}
+            className="w-full h-24 object-cover rounded-lg border border-slate-700"
+          />
+
+          {/* Delete button */}
+          <button
+            onClick={() =>
+              setPhotos((prev) => prev.filter((_, index) => index !== i))
+            }
+            className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white text-xs px-2 py-1 rounded"
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+    </div>
+
+    {/* Mobile Horizontal Scroll */}
+    <div className="md:hidden flex gap-3 overflow-x-auto">
+      {photos.map((src, i) => (
+        <div key={i} className="relative flex-shrink-0">
+          <img
+            src={src}
+            className="w-24 h-24 object-cover rounded-lg border border-slate-700"
+          />
+
+          {/* Delete button */}
+          <button
+            onClick={() =>
+              setPhotos((prev) => prev.filter((_, index) => index !== i))
+            }
+            className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white text-xs px-2 py-1 rounded"
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
 
       {/* CONDITION TAGS */}
       <div>
