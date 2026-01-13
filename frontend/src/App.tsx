@@ -1,20 +1,27 @@
 /**
  * App.tsx
  * -------
- * This is the main controller for the entire application.
- * It handles:
+ * Main controller for the entire application.
+ *
+ * Responsibilities:
  * - Navigation between screens
  * - Saving notes
  * - Saving EMT incidents
  * - Editing existing incidents
  * - Viewing incident history
+ * - Rendering Home, Settings, EMT, and Note screens
  */
 
 import { useState } from "react";
+import { useEffect } from "react";;
 import "./App.css";
 
 // Components
 import Navbar from "./components/Navbar";
+
+// Pages
+import Home from "./pages/Home";
+import Settings from "./pages/Settings";
 
 // Note Screens
 import NewNote from "./pages/NewNote";
@@ -36,17 +43,17 @@ import type { EMTIncidentData } from "./pages/EMTIncident";
 
 /**
  * ViewState controls which screen is visible.
- * Each screen has its own shape.
  */
-type ViewState =
+export type ViewState =
   | { name: "home" }
   | { name: "new" }
   | { name: "view"; id: string }
   | { name: "emt" }
   | { name: "emt-incident" }
-  | { name: "emt-edit"; index: number }   // <-- NEW: Edit existing incident
+  | { name: "emt-edit"; index: number }
   | { name: "emt-history" }
-  | { name: "emt-view"; index: number };
+  | { name: "emt-view"; index: number }
+  | { name: "settings" };
 
 function App() {
   const [view, setView] = useState<ViewState>({ name: "home" });
@@ -56,6 +63,17 @@ function App() {
 
   // EMT incidents storage
   const { incidents, setIncidents } = useLocalIncidents();
+   
+  // Apply saved theme on load
+  useEffect(() => {
+  const savedTheme = localStorage.getItem("settings_themeMode");
+
+  if (savedTheme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+}, [view]);
 
   /**
    * Save a new note and navigate to its detail view.
@@ -93,87 +111,65 @@ function App() {
 
   /**
    * Save or update an EMT incident.
-   * If editIndex is provided → overwrite existing incident.
-   * Otherwise → create a new one.
    */
   function handleSaveIncident(data: EMTIncidentData, editIndex?: number) {
     if (editIndex !== undefined) {
-      // Overwrite existing incident
       const updated = [...incidents];
       updated[editIndex] = data;
       setIncidents(updated);
     } else {
-      // Create new incident
       setIncidents([data, ...incidents]);
     }
 
-    // Return to EMT dashboard
     setView({ name: "emt" });
   }
 
-  // Find the note currently being viewed
+  // Current note being viewed
   const currentNote =
     view.name === "view" ? notes.find((n) => n.id === view.id) : null;
 
   return (
-    <div className="min-h-screen w-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white font-inter">
-      <Navbar />
+    <div
+  className="
+    min-h-screen w-screen font-inter
+    bg-white text-black
+    dark:bg-slate-900 dark:text-white
+    transition-colors duration-300"
+><Navbar />
 
       <main className="min-h-[calc(100vh-4rem)] px-8 py-12 flex justify-center items-start">
-        <section className="w-full max-w-7xl bg-slate-950 rounded-xl shadow-xl p-10">
+        <section
+  className="
+    w-full max-w-7xl rounded-xl shadow-xl p-10
+    bg-slate-100 text-black
+    dark:bg-slate-900 dark:text-white
+    transition-colors duration-300
+  "
+>
 
-          {/* HOME SCREEN */}
+          {/* HOME */}
           {view.name === "home" && (
-            <div className="text-center">
-              <h1 className="text-4xl font-bold tracking-tight mb-2">
-                Quick Notes for First Responders
-              </h1>
+            <Home setView={setView} notes={notes} />
+          )}
 
-              <p className="text-lg text-white/70 mb-8">
-                Capture vital info fast — timestamp, location, and tags.
-              </p>
-
-              {/* EMT Mode button */}
-              <button
-                onClick={() => setView({ name: "emt" })}
-                className="bg-brand-500 hover:bg-brand-600 text-white px-6 py-3 rounded-lg text-lg mb-10"
-              >
-                EMT Mode
-              </button>
-
-              {/* Notes list */}
-              {notes.length === 0 ? (
-                <div className="text-white/50">No recent notes</div>
-              ) : (
-                <div className="grid gap-4">
-                  {notes.map((n) => (
-                    <div
-                      key={n.id}
-                      onClick={() => setView({ name: "view", id: n.id })}
-                      className="bg-slate-800 p-4 rounded-lg cursor-pointer hover:bg-slate-700 transition"
-                    >
-                      <h2 className="text-xl font-semibold">{n.title}</h2>
-                      <p className="text-white/70 text-sm">{n.timestamp}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+          {/* SETTINGS */}
+          {view.name === "settings" && (
+            <Settings onBack={() => setView({ name: "home" })} />
           )}
 
           {/* EMT DASHBOARD */}
           {view.name === "emt" && (
-  <EMTDashboard
-    onStart={() => setView({ name: "emt-incident" })}
-    onContinue={() =>
-      incidents.length > 0
-        ? setView({ name: "emt-edit", index: 0 })
-        : null
-    }
-    onView={() => setView({ name: "emt-history" })}
-    onHome={() => setView({ name: "home" })}   // <-- ADD THIS
-  />
-)}
+            <EMTDashboard
+              onStart={() => setView({ name: "emt-incident" })}
+              onContinue={() =>
+                incidents.length > 0
+                  ? setView({ name: "emt-edit", index: 0 })
+                  : null
+              }
+              onView={() => setView({ name: "emt-history" })}
+              onHome={() => setView({ name: "home" })}
+            />
+          )}
 
           {/* NEW EMT INCIDENT */}
           {view.name === "emt-incident" && (
@@ -197,7 +193,9 @@ function App() {
           {view.name === "emt-history" && (
             <EMTIncidentHistory
               incidents={incidents}
-              onSelect={(index) => setView({ name: "emt-view", index })}
+              onSelect={(_, index) =>
+                setView({ name: "emt-view", index })
+              }
               onBack={() => setView({ name: "emt" })}
             />
           )}

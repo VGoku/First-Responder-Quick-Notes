@@ -13,6 +13,7 @@
  */
 
 import type { EMTIncidentData } from "./EMTIncident";
+import { generateIncidentPDF } from "../utils/generateIncidentPDF";
 
 interface Props {
   incident: EMTIncidentData;
@@ -30,6 +31,12 @@ export default function EMTIncidentView({ incident, onBack }: Props) {
       >
         ← Back
       </button>
+      <button
+  onClick={() => generateIncidentPDF(incident)}
+  className="text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg w-fit"
+>
+  📄 Download PDF
+</button>
 
       {/* TITLE */}
       <h1 className="text-3xl font-bold">Incident Details</h1>
