@@ -5,11 +5,12 @@
  *
  * This component:
  * - Shows EMT Mode button
+ * - Shows Firefighter Mode button
  * - Shows Settings button
  * - Shows recent notes
  * - Uses setView() to navigate between screens
  *
- * It receives:
+ * Props:
  * - setView: navigation function from App.tsx
  * - notes: list of saved notes
  */
@@ -48,11 +49,23 @@ export default function Home({ setView, notes }: HomeProps) {
         EMT Mode
       </button>
 
+      {/* FIREFIGHTER MODE BUTTON */}
+      <button
+        onClick={() => setView({ name: "fire-dashboard" })}
+        className="
+          px-6 py-3 rounded-lg text-lg mb-6 font-medium
+          bg-red-600 text-white hover:bg-red-700
+          dark:bg-red-500 dark:hover:bg-red-400 dark:text-white
+        "
+      >
+        Firefighter Mode
+      </button>
+
       {/* SETTINGS BUTTON */}
       <button
         onClick={() => setView({ name: "settings" })}
         className="
-          px-6 py-3 rounded-lg text-lg mb-10 ml-4 font-medium
+          px-6 py-3 rounded-lg text-lg mb-10 font-medium
           bg-slate-200 text-slate-800 hover:bg-slate-300
           dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600
         "
