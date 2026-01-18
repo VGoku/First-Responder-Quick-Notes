@@ -135,6 +135,6 @@ It’s a complete operational toolset built with clarity and intention.
 ## 📦 Installation
 
 ```bash
-git clone <https://github.com/VGoku/First-Responder-Quick-Notes.git>
+git clone <https://github.com/VGoku/rapid-suite.vercel.app.git>
 cd first-responder-suite
 npm install
